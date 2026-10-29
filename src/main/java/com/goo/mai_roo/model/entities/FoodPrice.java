@@ -1,9 +1,13 @@
 package com.goo.mai_roo.model.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "food_price")
 public class FoodPrice implements Serializable {
@@ -21,36 +25,4 @@ public class FoodPrice implements Serializable {
 
     @Column(name = "food_price_price")
     private Integer price;
-
-    public Long getFoodPriceId() {
-        return foodPriceId;
-    }
-
-    public void setFoodPriceId(Long foodPriceId) {
-        this.foodPriceId = foodPriceId;
-    }
-
-    public String getFoodId() {
-        return foodId;
-    }
-
-    public void setFoodId(String foodId) {
-        this.foodId = foodId;
-    }
-
-    public Integer getSizeId() {
-        return sizeId;
-    }
-
-    public void setSizeId(Integer sizeId) {
-        this.sizeId = sizeId;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
 }
