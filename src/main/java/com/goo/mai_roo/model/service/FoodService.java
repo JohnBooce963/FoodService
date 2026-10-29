@@ -20,6 +20,20 @@ public class FoodService {
 
     private static final Set<String> YES = Set.of("Y", "YES", "1", "T", "TRUE");
 
+    // ponytail: the category is the first two digits of food_id (the shop's own numbering).
+    // Move it to a food_category table once the shop wants to rename or reorder categories itself.
+    private static final Map<String, String> CATEGORIES = Map.ofEntries(
+            Map.entry("10", "ของทอด"),
+            Map.entry("20", "แกง"), Map.entry("21", "แกง"),
+            Map.entry("30", "ต้มยำ"),
+            Map.entry("40", "ข้าว"),
+            Map.entry("41", "ผัด"), Map.entry("42", "ผัด"), Map.entry("43", "ผัด"), Map.entry("44", "ผัด"),
+            Map.entry("50", "น้ำพริก"),
+            Map.entry("60", "ยำ & ลวกจิ้ม"),
+            Map.entry("70", "ลาบ & น้ำตก"),
+            Map.entry("80", "เครื่องดื่ม"));
+    static final String OTHER = "อื่นๆ";
+
     private final FoodRepository foods;
     private final FoodPriceRepository prices;
     private final FoodSizeRepository sizes;
@@ -39,16 +53,23 @@ public class FoodService {
                 .filter(p -> p.getFoodId() != null && p.getPrice() != null)
                 .collect(Collectors.groupingBy(FoodPrice::getFoodId));
 
-        return foods.findAll(Sort.by("foodName")).stream()
+        // Sorted by id, so categories and dishes come out in the shop's own order.
+        return foods.findAll(Sort.by("foodId")).stream()
+                .filter(f -> f.getFoodName() != null && !f.getFoodName().isBlank())
                 .map(f -> new MenuItem(
                         f.getFoodId(),
                         f.getFoodName(),
+                        category(f.getFoodId()),
                         f.getFoodIsPopular() != null && YES.contains(f.getFoodIsPopular().trim().toUpperCase()),
                         f.getFoodImg(),
                         byFood.getOrDefault(f.getFoodId(), List.of()).stream()
                                 .map(p -> new MenuItem.Option(p.getFoodPriceId(), sizeName(sizeNames, p), p.getPrice()))
                                 .toList()))
                 .toList();
+    }
+
+    static String category(String foodId) {
+        return foodId == null || foodId.length() < 2 ? OTHER : CATEGORIES.getOrDefault(foodId.substring(0, 2), OTHER);
     }
 
     private static String sizeName(Map<Long, String> sizeNames, FoodPrice p) {

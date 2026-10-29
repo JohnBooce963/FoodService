@@ -44,17 +44,21 @@ class OrderServiceTest {
     @BeforeEach
     void seed() {
         Food food = new Food();
-        food.setFoodId("F1");
+        food.setFoodId("10001");
         food.setFoodName("Pad Thai");
         food.setFoodIsPopular("Y");
         foods.save(food);
+
+        Food unnamed = new Food(); // half-entered rows like this exist in the real menu
+        unnamed.setFoodId("10002");
+        foods.save(unnamed);
 
         FoodSize size = new FoodSize();
         size.setSizeName("Large");
         sizes.save(size);
 
         FoodPrice price = new FoodPrice();
-        price.setFoodId("F1");
+        price.setFoodId("10001");
         price.setSizeId(size.getId().intValue());
         price.setPrice(60);
         priceId = prices.save(price).getFoodPriceId();
@@ -87,10 +91,13 @@ class OrderServiceTest {
     }
 
     @Test
-    void menuListsEachSizeUnderItsFood() {
-        MenuItem item = menu.menu().getFirst();
+    void menuListsEachSizeUnderItsFoodAndSkipsUnnamedFoods() {
+        List<MenuItem> items = menu.menu();
+        assertEquals(1, items.size());
+        MenuItem item = items.getFirst();
 
         assertEquals("Pad Thai", item.name());
+        assertEquals("ของทอด", item.category());
         assertTrue(item.popular());
         assertEquals(List.of(new MenuItem.Option(priceId, "Large", 60)), item.options());
     }
