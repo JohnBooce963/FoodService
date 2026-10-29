@@ -8,14 +8,14 @@ Frontend: [food-order-frontend](https://github.com/JohnBooce963/food-order-front
 Needs Java 21+ and a Postgres database (Neon works).
 
 ```bash
-cp .env.example .env   # then set DATABASE_URL (JDBC URL, user/password as query params)
+cp .env.example .env   # then paste Neon's connection string into DATABASE_URL
 ./mvnw spring-boot:run # http://localhost:8080, API docs at /swagger-ui.html
 ./mvnw verify          # tests run on in-memory H2, no database needed
 ```
 
 | Variable       | Required | Notes                                                        |
 | -------------- | -------- | ------------------------------------------------------------ |
-| `DATABASE_URL` | yes      | `jdbc:postgresql://<host>/<db>?user=…&password=…&sslmode=require` |
+| `DATABASE_URL` | yes      | Neon's connection string as is (`postgresql://user:pass@host/db?sslmode=require`), or a JDBC URL |
 | `CORS_ORIGINS` | no       | Frontend origin(s), comma separated. Defaults to `*` (no cookies are used) |
 
 The menu tables (`food`, `food_size`, `food_price`) must already exist. The order tables
